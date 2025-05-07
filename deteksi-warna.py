@@ -16,7 +16,7 @@ def rgb_to_hue(r, g, b):
         h = (60 * ((b - r) / d)) + 120
     elif mx == b:
         h = (60 * ((r - g) / d)) + 240
-    return int(h / 12)  # 30 bins (360/12)
+    return int(h / 12)  
 
 def get_hue_histogram(image_path):
     image = cv2.imread(image_path)
@@ -29,7 +29,7 @@ def get_hue_histogram(image_path):
             idx = rgb_to_hue(r, g, b)
             hist[idx] += 1
 
-    hist = hist / np.max(hist)  # Normalisasi
+    hist = hist / np.max(hist) 
     return hist
 
 def get_general_histogram(hists):
@@ -43,11 +43,10 @@ def classify(test_hist, features):
     return np.argmin(dists)
 
 # Ambil fitur dari gambar training
-hijau_hist = get_hue_histogram('image/hijau.bmp')
-campur_hist = get_hue_histogram('image/campur.bmp')
-merah_hist = get_hue_histogram('image/merah.bmp')
+hijau_hist = get_hue_histogram('training_image/hijau.bmp')
+campur_hist = get_hue_histogram('training_image/campur.bmp')
+merah_hist = get_hue_histogram('training_image/merah.bmp')
 
-# General & spesifik fitur
 general_hist = get_general_histogram([hijau_hist, campur_hist, merah_hist])
 features = [
     get_specific_features(hijau_hist, general_hist),
@@ -65,7 +64,7 @@ def plot_histograms(hists, labels, title, filename):
     plt.legend()
     plt.grid(True)
     plt.tight_layout()
-    plt.savefig(f'hasil/{filename}.png')  # Simpan ke folder hasil
+    plt.savefig(f'hasil/{filename}.png')  
     plt.show()
 
 # Plot histogram hue normalisasi
@@ -92,8 +91,7 @@ plot_histograms(
     'hist_spesifik'
 )
 
-# Deteksi dari gambar uji (bukan webcam)
-uji_img_path = 'image/uji_merah.bmp'  # path gambar uji
+uji_img_path = 'testing_image/uji_merah.bmp'  # path gambar uji
 
 # 1. Load gambar uji
 frame = cv2.imread(uji_img_path)
@@ -116,9 +114,8 @@ klasifikasi = classify(test_feature, features)
 label = ["Tomat Hijau", "Tomat Campur", "Tomat Merah"][klasifikasi]
 print(f"Gambar tersebut diklasifikasikan sebagai: {label}")
 
-# 5. (Opsional) Tampilin gambar + label
-cv2.putText(frame, label, (50, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,255,0), 1)
-cv2.imwrite('hasil/klasifikasi_uji_hijau.png', frame)
+cv2.putText(frame, label, (50, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,0,0), 2)
+cv2.imwrite('hasil/klasifikasi_uji_merah.png', frame)
 cv2.imshow("Hasil Klasifikasi", frame)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
